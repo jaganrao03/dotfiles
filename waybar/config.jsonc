@@ -1,0 +1,210 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 45,
+    "spacing": 0,
+    "margin-top": 0,
+    "margin-left": 10,
+    "margin-right": 10,
+    "modules-left": [
+        "custom/launcher",
+        "hyprland/workspaces",
+        "custom/updates"
+    ],
+    "modules-center": [
+        "custom/music",
+        "hyprland/window"
+    ],
+    "modules-right": [
+        "network",
+        "pulseaudio",
+        "backlight",
+        "battery",
+        "custom/notifications",
+        "tray",
+        "clock",
+        "custom/power"
+    ],
+    "custom/launcher": {
+        "format": "{}",
+        "tooltip": true,
+        "exec": "echo '{\"text\":\"💧\",\"tooltip\":\"Drun | Run\"}'",
+        "return-type": "json",
+        "on-click": "pkill tofi || sleep 0.15 && tofi-drun -c ~/.config/tofi/tofi.launcher.conf",
+        "on-click-right": "pkill tofi || sleep 0.15 && tofi-run -c ~/.config/tofi/tofi.launcher.conf"
+    },
+    "hyprland/workspaces": {
+        "format": "{name}",
+        "format-icons": {
+            "1": "1",
+            "2": "2",
+            "3": "3",
+            "4": "4",
+            "5": "5",
+            "6": "6",
+            "7": "7",
+            "8": "8",
+            "9": "9",
+            "10": "10"
+        },
+        "on-scroll-up": "hyprctl dispatch workspace e-1",
+        "on-scroll-down": "hyprctl dispatch workspace e+1",
+        "on-click": "activate"
+    },
+    "custom/updates": {
+        "format": "{}",
+        "exec": "~/.scripts/updates",
+        "on-click": "~/.scripts/updates update",
+        "interval": 600,
+        "tooltip": true
+    },
+    "custom/music": {
+        "format": "{icon}{}",
+        "format-icons": {
+            "Paused": " ",
+            "Stopped": "&#x202d;ﭥ "
+        },
+        "escape": true,
+        "tooltip": true,
+        "exec": "~/.scripts/caway -b 10 -e",
+        "return-type": "json",
+        "on-click": "playerctl play-pause",
+        "on-scroll-up": "playerctl previous",
+        "on-scroll-down": "playerctl next",
+        "on-click-right": "amberol",
+        "max-length": 35
+    },
+    "hyprland/window": {
+        "format": "{}",
+        "separate-outputs": true,
+        "max-length": 35
+    },
+    "network": {
+        "format": "↕{bandwidthTotalBytes}",
+        "format-disconnected": "{icon} No Internet",
+        "format-linked": " {ifname} (No IP)",
+        "format-alt": "↕{bandwidthUpBytes} | ↕{bandwidthDownBytes}",
+        "tooltip-format": "{ifname}: {ipaddr}/{cidr}  {gwaddr}",
+        "tooltip-format-wifi": "{icon} {essid} ({signalStrength}%)",
+        "tooltip-format-ethernet": "{icon} {ipaddr}/{cidr}",
+        "tooltip-format-disconnected": "{icon} Disconnected",
+        "on-click-right": "nm-connection-editor",
+        "format-icons": {
+            "ethernet": "",
+            "disconnected": "⚠",
+            "wifi": [
+                "睊",
+                "直"
+            ]
+        },
+        "interval": 2
+    },
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-bluetooth": "{icon} {volume}%",
+        "format-bluetooth-muted": "",
+        "format-muted": "",
+        "format-source": "{volume}% ",
+        "format-source-muted": "",
+        "format-icons": {
+            "headphone": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": " ",
+            "default": [
+                "",
+                "",
+                ""
+            ]
+        },
+        "on-click": "pavucontrol"
+    },
+    "backlight": {
+        "format": "{icon} {percent}%",
+        "format-icons": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ],
+        "on-scroll-up": "light -A 1",
+        "on-scroll-down": "light -U 1",
+        "interval": 2
+    },
+    "battery": {
+        "states": {
+            "good": 100,
+            "warning": 30,
+            "critical": 10
+        },
+        "format": "{icon} {capacity}%",
+        "format-charging": " {capacity}%",
+        "format-plugged": " {capacity}%",
+        "format-alt": "{icon} {time}",
+        "format-full": " {capacity}%",
+        "format-icons": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ],
+        "interval": 2
+    },
+    "custom/notifications": {
+        "tooltip": false,
+        "format": "{icon}",
+        "format-icons": {
+            "notification": "<span foreground='red'><sup></sup></span>",
+            "none": "",
+            "dnd-notification": "<span foreground='red'><sup></sup></span>",
+            "dnd-none": ""
+        },
+        "return-type": "json",
+        "exec-if": "which swaync-client",
+        "exec": "swaync-client -swb",
+        "on-click": "sleep 0.15 && swaync-client -t -sw",
+        "on-click-right": "sleep 0.15 && swaync-client -d -sw",
+        "escape": true
+    },
+    "tray": {
+        "icon-size": 15,
+        "spacing": 15
+    },
+    "clock": {
+        "timezone": "Asia/Calcutta",
+        "format": " {:%d <small>%a</small> %H:%M}",
+        "format-alt": " {:%A %B %d %Y (%V) | %r}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "calendar-weeks-pos": "right",
+        "today-format": "<span color='#f38ba8'><b><u>{}</u></b></span>",
+        "format-calendar": "<span color='#f2cdcd'><b>{}</b></span>",
+        "format-calendar-weeks": "<span color='#94e2d5'><b>W{:%U}</b></span>",
+        "format-calendar-weekdays": "<span color='#f9e2af'><b>{}</b></span>",
+        "interval": 60
+    },
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "",
+            "deactivated": ""
+        }
+    },
+    "custom/power": {
+        "format": "{}",
+        "exec": "echo '{\"text\":\"⏻\",\"tooltip\":\"Power\"}'",
+        "return-type": "json",
+        "on-click": "~/.config/wlogout/launch.sh"
+    }
+}
