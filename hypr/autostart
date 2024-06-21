@@ -14,11 +14,11 @@ dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT
 export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/gcr/ssh
 
 # variables
-scripts=~/.scripts
+scripts=~/.config/hypr/scripts
 
 # gsettings
 gsettings set org.gnome.desktop.interface gtk-theme 'Tokyonight-Dark-BL-LB'
-gsettings set org.gnome.desktop.interface font-name 'CaskaydiaCove Nerd Font 9'
+gsettings set org.gnome.desktop.interface font-name 'Calibri Font 12'
 gsettings set org.gnome.desktop.interface icon-theme 'Tokyonight-Moon'
 gsettings set org.gnome.desktop.interface cursor-theme 'Sweet-cursors'
 
@@ -30,7 +30,7 @@ env = XDG_CURRENT_DESKTOP,Hyprland
 env = XDG_SESSION_TYPE,wayland
 env = XDG_SESSION_DESKTOP,Hyprland
 env = QT_QPA_PLATFORM,wayland
-#env = QT_STYLE_OVERRIDE,kvantum
+env = QT_STYLE_OVERRIDE,kvantum
 env = QT_QPA_PLATFORMTHEME,qt6ct
 env = QT_WAYLAND_DISABLE_WINDOWDECORATION,1
 env = QT_AUTO_SCREEN_SCALE_FACTOR,1
@@ -48,7 +48,7 @@ $scripts/launch_waybar &
 # g4music &
 
 # wallpaper
-$scripts/wall ~/.config/hypr/wallpapers/1.jpg &
+$scripts/wallpaper.sh &
 
 # effects
 # $scripts/tools/rgb &

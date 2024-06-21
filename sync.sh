@@ -4,7 +4,7 @@
 files=(
     ".bashrc"
     ".gitconfig"
-    ".scripts"
+    ".config/hypr/scripts"
     ".config/btop"
     ".config/cava"
     ".config/dunst"

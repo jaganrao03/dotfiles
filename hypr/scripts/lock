@@ -1,0 +1,44 @@
+#!/usr/bin/bash
+
+# Path to the file containing the current wallpaper
+wallpaper_file="${HOME}/.cache/current_wallpaper"
+
+# Check if the wallpaper file exists and read from it
+if [ -f "$wallpaper_file" ]; then
+    # Extracting the wallpaper path, assuming the path is always on the second line
+    wallpaper_path=$(tail -n 1 "$wallpaper_file")
+    echo "Using wallpaper from: $wallpaper_path"
+else
+    echo "Wallpaper file not found, using default"
+    wallpaper_path="${HOME}/.config/hypr/wallpapers/default.jpg" # Fallback wallpaper
+    echo "Default wallpaper set to: $wallpaper_path"
+fi
+
+# Ensure wallpaper path is not empty
+if [ -z "$wallpaper_path" ]; then
+    echo "Error: Wallpaper path is empty."
+    exit 1
+fi
+
+# Debug: Print final swaylock command to be executed
+echo "Running swaylock with the following command:"
+echo "swaylock --image \"$wallpaper_path\" --inside-wrong-color f38ba8 --ring-wrong-color 161925 ..."
+
+swaylock \
+--image "$wallpaper_path" \
+--inside-wrong-color f38ba8 \
+--ring-wrong-color 161925 \
+--inside-clear-color a6e3a1 \
+--ring-clear-color 161925 \
+--inside-ver-color 89b4fa \
+--ring-ver-color 161925 \
+--text-color f5c2e7 \
+--indicator-radius 100 \
+--indicator-thickness 5 \
+--effect-vignette 0.6:0.6 \
+--ring-color 161925 \
+--key-hl-color f5c2e7 \
+--line-color 313244 \
+--inside-color 00161925 \
+--separator-color 00000000 \
+--fade-in 0.2 &

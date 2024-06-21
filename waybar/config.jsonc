@@ -20,7 +20,8 @@
         "custom/updates"
     ],
     "modules-center": [
-        "custom/music"
+        "custom/music",
+        "hyprland/window"
     ],
     "modules-right": [
         "network",
