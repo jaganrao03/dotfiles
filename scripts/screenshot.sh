@@ -1,63 +1,45 @@
-#!/usr/bin/env sh
+#!/bin/bash
+#  ____                               _           _    
+# / ___|  ___ _ __ ___  ___ _ __  ___| |__   ___ | |_  
+# \___ \ / __| '__/ _ \/ _ \ '_ \/ __| '_ \ / _ \| __| 
+#  ___) | (__| | |  __/  __/ | | \__ \ | | | (_) | |_  
+# |____/ \___|_|  \___|\___|_| |_|___/_| |_|\___/ \__| 
+#                                                      
+#  
+# by Stephan Raabe (2023) 
+# ----------------------------------------------------- 
 
-# Restores the shader after screenhot has been taken
-restore_shader() {
-	if [ -n "$shader" ]; then
-		hyprshade on "$shader"
-	fi
-}
+DIR="$HOME/Pictures/screenshots/"
+NAME="screenshot_$(date +%d%m%Y_%H%M%S).png"
 
-# Saves the current shader and turns it off
-save_shader() {
-	shader=$(hyprshade current)
-	hyprshade off
-	trap restore_shader EXIT
-}
+option2="Selected area"
+option3="Fullscreen (delay 3 sec)"
+option4="Current display (delay 3 sec)"
 
-save_shader # Saving the current shader
+options="$option2\n$option3\n$option4"
 
-if [ -z "$XDG_PICTURES_DIR" ]; then
-	XDG_PICTURES_DIR="$HOME/Pictures"
-fi
+choice=$(echo -e "$options" | rofi -dmenu -replace -config ~/.config/rofi/config-screenshot.rasi -i -no-show-icons -l 3 -width 30 -p "Take Screenshot")
 
-scrDir=$(dirname "$(realpath "$0")")
-source $scrDir/globalcontrol.sh
-swpy_dir="${confDir}/swappy"
-save_dir="${2:-$XDG_PICTURES_DIR/Screenshots}"
-save_file=$(date +'%y%m%d_%Hh%Mm%Ss_screenshot.png')
-temp_screenshot="/tmp/screenshot.png"
-
-mkdir -p $save_dir
-mkdir -p $swpy_dir
-echo -e "[Default]\nsave_dir=$save_dir\nsave_filename_format=$save_file" >$swpy_dir/config
-
-function print_error
-{
-	cat <<"EOF"
-    ./screenshot.sh <action>
-    ...valid actions are...
-        p  : print all screens
-        s  : snip current screen
-        sf : snip current screen (frozen)
-        m  : print focused monitor
-EOF
-}
-
-case $1 in
-p) # print all outputs
-	grimblast copysave screen $temp_screenshot && restore_shader && swappy -f $temp_screenshot ;;
-s) # drag to manually snip an area / click on a window to print it
-	grimblast copysave area $temp_screenshot && restore_shader && swappy -f $temp_screenshot ;;
-sf) # frozen screen, drag to manually snip an area / click on a window to print it
-	grimblast --freeze copysave area $temp_screenshot && restore_shader && swappy -f $temp_screenshot ;;
-m) # print focused monitor
-	grimblast copysave output $temp_screenshot && restore_shader && swappy -f $temp_screenshot ;;
-*) # invalid option
-	print_error ;;
+case $choice in
+    $option2)
+        grim -g "$(slurp)" "$DIR$NAME"
+        xclip -selection clipboard -t image/png -i "$DIR$NAME"
+        notify-send "Screenshot created and copied to clipboard" "Mode: Selected area"
+        swappy -f "$DIR$NAME"
+    ;;
+    $option3)
+        sleep 3
+        grim "$DIR$NAME" 
+        xclip -selection clipboard -t image/png -i "$DIR$NAME"
+        notify-send "Screenshot created and copied to clipboard" "Mode: Fullscreen"
+        swappy -f "$DIR$NAME"
+    ;;
+    $option4)
+        sleep 3
+        monitor="$(hyprctl monitors | awk '/Monitor/{monitor=$2} /focused: yes/{print monitor; exit}')"
+        grim -o "$monitor" "$DIR$NAME"
+        xclip -selection clipboard -t image/png -i "$DIR$NAME"
+        notify-send "Screenshot created and copied to clipboard" "Mode: Fullscreen"
+        swappy -f "$DIR$NAME"
+    ;;
 esac
-
-rm "$temp_screenshot"
-
-if [ -f "${save_dir}/${save_file}" ]; then
-	notify-send -a "t1" -i "${save_dir}/${save_file}" "saved in ${save_dir}"
-fi

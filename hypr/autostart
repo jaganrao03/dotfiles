@@ -1,79 +1,70 @@
 #!/usr/bin/bash
 
-# Policy Authentication Agent
+# Start Policy Authentication Agent
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 
-eval $(/usr/bin/gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
-export $(gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
-
-# https://wiki.hyprland.org/FAQ/#some-of-my-apps-take-a-really-long-time-to-open
-# https://gist.github.com/PowerBall253/2dea6ddf6974ba4e5d26c3139ffb7580
-systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP &
-dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP --all &
-
+# Start GNOME Keyring with all components
+eval $(gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
 export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/gcr/ssh
 
-# variables
-scripts=~/.config/hypr/scripts
+# Import Wayland and GNOME environment variables and update system dbus
+systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP --all
 
-# gsettings
+# Set paths and other environment variables
+scripts=~/.config/hypr/scripts
+export PATH=$PATH:$scripts
+export XDG_CURRENT_DESKTOP=Hyprland
+export XDG_SESSION_TYPE=wayland
+export XDG_SESSION_DESKTOP=Hyprland
+export QT_QPA_PLATFORM=wayland;xcb
+export QT_QPA_PLATFORMTHEME=qt6ct
+export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+export QT_AUTO_SCREEN_SCALE_FACTOR=1
+export MOZ_ENABLE_WAYLAND=1
+export GDK_SCALE=1
+export QT_STYLE_OVERRIDE=kvantum
+export QT_QPA_PLATFORMTHEME=qt5ct
+
+# Configure GSettings for GTK and GNOME environments
 gsettings set org.gnome.desktop.interface gtk-theme 'Tokyonight-Dark-BL-LB'
 gsettings set org.gnome.desktop.interface font-name 'Calibri Font 12'
 gsettings set org.gnome.desktop.interface icon-theme 'Tokyonight-Moon'
 gsettings set org.gnome.desktop.interface cursor-theme 'Sweet-cursors'
-
-# For nemo
 gsettings set org.cinnamon.desktop.default-applications.terminal exec kitty
 
-# Some default env vars.
-env = XDG_CURRENT_DESKTOP,Hyprland
-env = XDG_SESSION_TYPE,wayland
-env = XDG_SESSION_DESKTOP,Hyprland
-env = QT_QPA_PLATFORM,wayland
-env = QT_STYLE_OVERRIDE,kvantum
-env = QT_QPA_PLATFORMTHEME,qt6ct
-env = QT_WAYLAND_DISABLE_WINDOWDECORATION,1
-env = QT_AUTO_SCREEN_SCALE_FACTOR,1
-env = MOZ_ENABLE_WAYLAND,1
-
-# notification daemon
+# Launch swaync, notification daemon
 swaync &
 
-# waybar
+# Launch Waybar with a script
 $scripts/launch_waybar &
-# $scripts/dynamic &
 
-# music daemon
-# mpd &
-# g4music &
+# Set wallpaper with a script
+$scripts/wallpaper.sh init &
 
-# wallpaper
-$scripts/wallpaper.sh &
-
-# effects
-# $scripts/tools/rgb &
-
-# Applets
-$scripts/appindicator.py &
+# Start system tray applets
 blueman-applet &
-nm-applet --indicator &\
+nm-applet --indicator &
 
-# other
+# Set custom cursor size using hyprctl
 hyprctl setcursor Sweet-cursors 24
-wl-paste --watch cliphist store &
+
+# Clipboard management
+wl-paste --type text --watch cliphist store &
+wl-paste --type image --watch cliphist store &
+
+# Send a notification on startup
 notify-send -a aurora "hello $(whoami)" &
+
+# Start libinput gestures, wlsunset, Telegram, and other applications
 libinput-gestures-setup start &
-# touchegg
-wlsunset -S 9:00 -s 19:30
-exec-once = telegram-desktop -startintray
-# sleep 1
-# mpd-mpris &
-# hyprctl dispatch movetoworkspacesilent 2,com.github.neithern.g4music
+wlsunset -S 9:00 -s 19:30 &
+telegram-desktop -startintray &
+rog-control-center &
 
-
+# Restart xdg-desktop-portal services for Hyprland
 sleep 1
-killall xdg-desktop-portal-hyprland
-killall xdg-desktop-portal
+killall xdg-desktop-portal-hyprland xdg-desktop-portal
 /usr/lib/xdg-desktop-portal-hyprland &
 sleep 2
 /usr/lib/xdg-desktop-portal &

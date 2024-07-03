@@ -5,7 +5,6 @@
 # |  _ < (_) |  _| | 
 # |_| \_\___/|_| |_| 
 #                    
-# by Stephan Raabe (2023) 
 # ----------------------------------------------------- 
 */
 
@@ -28,7 +27,7 @@ configuration {
 }
 
 /* ---- Load font ---- */
-@import "~/dotfiles/.settings/rofi-font.rasi"
+@import "~/.config/rofi/rofi-font.rasi"
 
 /* ---- Load pywal colors (custom wal template) ---- */
 @import "~/.cache/wal/colors-rofi-pywal"
@@ -37,7 +36,7 @@ configuration {
 @import "~/.cache/current_wallpaper.rasi"
 
 /* ---- Load border width ---- */
-@import "~/dotfiles/.settings/rofi-border.rasi"
+@import "~/.config/rofi/rofi-border.rasi"
 
 /* ---- Window ---- */
 window {

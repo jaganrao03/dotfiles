@@ -1,15 +1,16 @@
 {
-    "layer": "top", // Waybar at top layer
-    "position": "top", // Waybar position (top|bottom|left|right)
+    "layer": "top",
+    "position": "top",
     //"gtk-layer-shell": "false",
-    "height": 45, // Waybar height (to be removed for auto height)
-    // "width": 2560, // Waybar width
-    "spacing": 0, // Gaps between modules (0px) Adjusted in the css
+    "height": 45,
+    // "width": 2560,
+    "spacing": 0,
     "margin-top": 0,
     //"margin-bottom":-10,
     "margin-left": 10,
     "margin-right": 10,
-    // Choose the order of the modules
+
+
     "modules-left": [
         "custom/launcher",
         "hyprland/workspaces",
@@ -21,10 +22,12 @@
     ],
     "modules-center": [
         "custom/music",
+        "custom/lizzy",
         "hyprland/window"
     ],
     "modules-right": [
         "network",
+        "bluetooth",
         "pulseaudio",
         "backlight",
         "battery",
@@ -42,22 +45,23 @@
         "tooltip": true,
         "exec": "echo '{\"text\":\"💧\",\"tooltip\":\"Drun | Run\"}'",
         "return-type": "json",
-        "on-click": "pkill tofi || sleep 0.15 && tofi-drun -c ~/.config/tofi/tofi.launcher.conf",
+        "on-click": "pkill rofi || exec ~/.config/rofi/launchers/type-3/launcher.sh",
+        //"on-click": "pkill tofi || sleep 0.15 && tofi-drun -c ~/.config/tofi/tofi.launcher.conf",
         "on-click-right": "pkill tofi || sleep 0.15 && tofi-run -c ~/.config/tofi/tofi.launcher.conf",
         // "on-click": "pkill wofi || wofi --show drun -n",
         // "on-click-right": "pkill wofi || wofi --show run -n",
     },
     "hyprland/workspaces": {
-        // "format": "{icon} {name}",
+         //"format": "{icon} {name}",
         "format": "",
-        "format-icons": {
+      "format-icons": {
             "active": "",
             "default": ""
         },
         "on-scroll-up": "hyprctl dispatch workspace e-1",
         "on-scroll-down": "hyprctl dispatch workspace e+1",
         "on-click": "activate"
-    },
+        },
     "cpu": {
         "format": " {usage}%",
         "tooltip": true,
@@ -93,12 +97,12 @@
     },
     "custom/updates": {
         "format": "{}",
-        "exec": "~/.scripts/updates",
-        "on-click": "~/.scripts/updates update",
+        "exec": "~/.config/hypr/scripts//updates",
+        "on-click": "~/.config/hypr/scripts//updates update",
         "interval": 600,
         "tooltip": true,
         // "tooltip-format": "{}",
-        // "exec-tooltip": "~/.scripts/updates tooltip"
+        // "exec-tooltip": "~/.config/hypr/scripts//updates tooltip"
     },
     "custom/music": {
         "format": "{icon}{}",
@@ -109,14 +113,27 @@
         },
         "escape": true,
         "tooltip": true,
-        "exec": "~/.scripts/caway -b 10 -e",
+        "exec": "~/.config/hypr/scripts/caway -b 10 -e",
         "return-type": "json",
         "on-click": "playerctl play-pause",
         "on-scroll-up": "playerctl previous",
         "on-scroll-down": "playerctl next",
         "on-click-right": "amberol",
         "max-length": 35
-    },
+        },
+        "custom/lizzy": {
+		"format": "<span color='#25be6a'>{icon}</span>  {}",
+		"exec": "lizzy --format ' {{title}} - {{artist}}' --autotoggle --mediaplayer spotify",
+		"return-type": "json",
+		"format-icons": {
+		  "Playing": "",
+		  "Paused": ""
+		},
+		"max-length": 45,
+		"on-click":"playerctl --player=spotify play-pause",
+		"on-scroll-up":"playerctl --player=spotify next",
+		"on-scroll-down":"playerctl --player=spotify previous"
+	},
     "hyprland/window": {
         "format": "{}",
         "separate-outputs": true,
@@ -133,6 +150,7 @@
         "tooltip-format-ethernet": "{icon} {ipaddr}/{cidr}",
         "tooltip-format-disconnected": "{icon} Disconnected",
         "on-click-right": "nm-connection-editor",
+        "on-click":"~/.config/rofi/scripts/rofi-wifi-menu.sh",
         "format-icons": {
             "ethernet": "",
             "disconnected": "⚠",
@@ -142,6 +160,14 @@
             ]
         },
         "interval": 2
+    },
+    "bluetooth":{
+    "format-on": "<span color='#e57474'></span>  Turned On",
+    "format-off": "<span color='#e57474'></span>  Turned Off",
+    "format-disabled": "<span color='#e57474'></span>  Disabled",
+    "format-connected": "<span color='#e57474'></span> Connected",
+    "format": "<span color='#e57474'></span> Disabled",
+        "on-click":"blueman-manager &"
     },
     "pulseaudio": {
         // "scroll-step": 1, // %, can be a float
@@ -163,10 +189,12 @@
                 ""
             ]
         },
-        "on-click": "pavucontrol"
+        "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+        "on-click-right": "pavucontrol"
     },
     "backlight": {
         // "device": "acpi_video1",
+        //"format": "<span color='#8ccf7e'>󱩖 </span>  {percent}%   ",
         "format": "{icon} {percent}%",
         "format-icons": [
             "",
@@ -230,7 +258,7 @@
         "spacing": 15
     },
     "clock": {
-        "timezone": "Asia/Calcutta",
+        "timezone": "America/Chicago",
         "format": " {:%d <small>%a</small> %H:%M}",
         //"format": " {:%a %b %d %Y | %H:%M}",
         "format-alt": " {:%A %B %d %Y (%V) | %r}",
@@ -247,31 +275,32 @@
         "format-icons": {
             "activated": "",
             "deactivated": ""
-        }
+        },
+        "tooltip": "true"
     },
     "custom/weather": {
         "tooltip": true,
         "format": "{}",
-        "exec": "~/.scripts/tools/expand weather",
+        "exec": "~/.config/hypr/scripts/expand weather",
         "return-type": "json"
     },
     "custom/ss": {
         "format": "{}",
-        "exec": "~/./scripts/tools/expand ss-icon",
+        "exec": "~/.config/hypr/scripts/expand ss-icon",
         "return-type": "json",
-        "on-click": "~/.scripts/screenshot_full"
+        "on-click": "~/.config/hypr/scripts//screenshot_full"
     },
     "custom/cycle_wall": {
         "format": "{}",
-        "exec": "~/.scripts/tools/expand wall",
+        "exec": "~/.config/hypr/scripts/expand wall",
         "return-type": "json",
         // "interval": 1,
-        "on-click": "~/.scripts/tools/expand cycle",
-        "on-click-right": "~/.scripts/tools/expand cycler"
+        "on-click": "~/.config/hypr/scripts/expand cycle",
+        "on-click-right": "~/.config/hypr/scripts/expand cycler"
     },
     "custom/clipboard": {
         "format": "{}",
-        "exec": "~/.scripts/tools/expand clipboard",
+        "exec": "~/.config/hypr/scripts/expand clipboard",
         "return-type": "json",
         // Window position is managed in Hyperland config's windowrulev2
         "on-click": "pkill tofi || sleep 0.15 && cliphist list | tofi -c ~/.config/tofi/tofi.clip.conf | cliphist decode | wl-copy",
@@ -285,15 +314,16 @@
     },
     "custom/power": {
         "format": "{}",
-        // "exec": "~/.scripts/tools/expand power",
+        // "exec": "~/.config/hypr/scripts/expand power",
         "exec": "echo '{\"text\":\"⏻\",\"tooltip\":\"Power\"}'",
         "return-type": "json",
-        "on-click": "~/.config/wlogout/launch.sh"
+        //"on-click": "~/.config/wlogout/launch.sh",
+        "on-click":"~/.config/rofi/powermenu/type-4/powermenu.sh"
     },
     "custom/custom": {
         "format": "{}",
-        "exec": "~/.scripts/tools/expand arrow-icon",
-        "on-click": "~/.scripts/tools/expand_toolbar",
+        "exec": "~/.config/hypr/scripts/expand arrow-icon",
+        "on-click": "~/.config/hypr/scripts/expand_toolbar",
         "return-type": "json"
     }
 }
