@@ -1,0 +1,23 @@
+" Special
+let wallpaper  = "/home/jagan/.config/hypr/wallpaper/wallpaper_84.png"
+let background = "#090704"
+let foreground = "#e2cebe"
+let cursor     = "#e2cebe"
+
+" Colors
+let color0  = "#090704"
+let color1  = "#1313ae"
+let color2  = "#cf6117"
+let color3  = "#e88c35"
+let color4  = "#eb9c53"
+let color5  = "#1c80e5"
+let color6  = "#f0a681"
+let color7  = "#e2cebe"
+let color8  = "#9e9085"
+let color9  = "#1313ae"
+let color10 = "#cf6117"
+let color11 = "#e88c35"
+let color12 = "#eb9c53"
+let color13 = "#1c80e5"
+let color14 = "#f0a681"
+let color15 = "#e2cebe"

@@ -1,0 +1,120 @@
+#!/usr/bin/bash
+
+scrPath=$HOME/.config/hypr/scripts
+
+# Start Policy Authentication Agent
+/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+
+# Start GNOME Keyring with all components
+eval $(gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
+export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/gcr/ssh
+
+# Import Wayland and GNOME environment variables and update system dbus
+systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP --all
+
+# Set paths and other environment variables
+scripts=~/.config/hypr/scripts
+export PATH=$PATH:$scrPath
+export XDG_CURRENT_DESKTOP=Hyprland
+export XDG_SESSION_TYPE=wayland
+export XDG_SESSION_DESKTOP=Hyprland
+export QT_QPA_PLATFORM=wayland;xcb
+export QT_QPA_PLATFORMTHEME=qt6ct
+export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+export QT_AUTO_SCREEN_SCALE_FACTOR=1
+export MOZ_ENABLE_WAYLAND=1
+export GDK_SCALE=1
+export QT_QPA_PLATFORMTHEME=qt5ct
+
+# Configure GSettings for GTK and GNOME environments
+gsettings set org.gnome.desktop.interface gtk-theme 'Tokyonight-Dark-BL-LB'
+gsettings set org.gnome.desktop.interface font-name 'Calibri Font 12'
+gsettings set org.gnome.desktop.interface icon-theme 'Tokyonight-Moon'
+gsettings set org.gnome.desktop.interface cursor-theme 'Sweet-cursors'
+gsettings set org.cinnamon.desktop.default-applications.terminal exec kitty
+
+# Launch swaync, notification daemon
+swaync &
+
+# Initial setup check
+if [ ! -f ~/.config/hypr/autostart ]; then
+    sleep 1
+    # Initialize wallust and wallpaper
+    if [ -f "$wallpaper" ]; then
+        wallust run -s $wallpaper > /dev/null 
+        swww query || swww-daemon && $swww $wallpaper $effect
+        "$scrPath/wallpaper.sh" > /dev/null 2>&1 & 
+    fi
+    
+    # Set GTK themes and icons
+    gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' > /dev/null 2>&1 &
+    gsettings set org.gnome.desktop.interface gtk-theme 'Andromeda-dark' > /dev/null 2>&1 &
+    gsettings set org.gnome.desktop.interface icon-theme 'Flat-Remix-Blue-Dark' > /dev/null 2>&1 &
+    gsettings set org.gnome.desktop.interface cursor-theme 'Bibata-Modern-Ice' > /dev/null 2>&1 &
+    gsettings set org.gnome.desktop.interface cursor-size 24 > /dev/null 2>&1 &
+    
+    # Set kvantum theme
+    kvantummanager --set "Catppuccin-Mocha" > /dev/null 2>&1 &
+
+    # Initial Waybar style setup
+    if [ -f "$waybar_style" ]; then
+        ln -sf "$waybar_style" "$HOME/.config/waybar/style.css"
+        "$scrPath/launch_waybar" > /dev/null 2>&1 & 
+    fi
+
+    touch ~/.config/hypr/.initial_startup_done
+    exit
+fi
+
+# Start Waybar and other services
+$scrPath/launch_waybar &
+$scrPath/wallpaper.sh init &
+$scrPath/wallpaper.sh interval 500 &
+
+# System tray applets
+blueman-applet &
+nm-applet --indicator &
+
+# Set custom cursor size
+hyprctl setcursor Sweet-cursors 24
+
+# Clipboard management
+wl-paste --type text --watch cliphist store &
+wl-paste --type image --watch cliphist store &
+
+# Startup notification
+notify-send -a aurora "hello $(whoami)" &
+
+# Start other applications
+libinput-gestures-setup start &
+wlsunset -S 9:00 -s 19:30 &
+telegram-desktop -startintray &
+whatsie -startintray &
+thunderbird -startintray &
+kdeconnectd &
+kdeconnect-indicator & 
+rog-control-center &
+
+# Restart xdg-desktop-portal services
+sleep 1
+killall xdg-desktop-portal-hyprland xdg-desktop-portal
+/usr/lib/xdg-desktop-portal-hyprland &
+sleep 2
+/usr/lib/xdg-desktop-portal &
+
+# Autostart the browser based on the current setup
+browser_to_start=$(grep 'browser =' ~/.config/hypr/hyprland.conf | awk -F' = ' '{print $2}')
+
+start_browser() {
+    case "$1" in
+        "firedragon") firedragon & ;;
+        "vivaldi") vivaldi-stable & ;;
+        "firefox") firefox & ;;
+        "floorp") floorp & ;;
+        *) notify-send "Hyprland Config" "No valid browser found to start" ;;
+    esac
+}
+
+start_browser "$browser_to_start"
+

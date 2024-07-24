@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+# Ensure the script runs only on Arch-based systems
+if [ ! -f /etc/arch-release ]; then
+    exit 0
+fi
+
+# Ensure necessary commands are available
+if ! command -v yay &> /dev/null; then
+    echo "yay is not installed. Please install yay to use this script."
+    exit 1
+fi
+
+if ! command -v checkupdates &> /dev/null; then
+    echo "checkupdates is not installed. Please install pacman-contrib to use this script."
+    exit 1
+fi
+
+# Symbols and commands
+UPDATE_SYMBOL=""
+UPDATE_COMMAND="/usr/bin/yay -Syu --noconfirm"
+FULLSCREEN_TERMINAL="kitty --start-as=fullscreen --title all_is_kitty --hold --detach sh -c"
+
+# Functions to get update counts
+get_aur_updates() {
+    yay -Qua | wc -l
+}
+
+get_official_updates() {
+    checkupdates | wc -l
+}
+
+# Main script logic
+case $1 in
+    aur)
+        AUR=$(get_aur_updates)
+        echo "$UPDATE_SYMBOL $AUR"
+        ;;
+    official)
+        OFFICIAL=$(get_official_updates)
+        echo "$UPDATE_SYMBOL $OFFICIAL"
+        ;;
+    update)
+        $FULLSCREEN_TERMINAL "$UPDATE_COMMAND && pkill -f 'kitty --title all_is_kitty'"
+        ;;
+    "")
+        AUR=$(get_aur_updates)
+        OFFICIAL=$(get_official_updates)
+        COUNT=$((OFFICIAL + AUR))
+        if [ "$COUNT" -ne 0 ]; then
+            echo "$UPDATE_SYMBOL $COUNT"
+        else
+            echo ""
+        fi
+        ;;
+    *)
+        echo "Usage: $0 {aur|official|update}"
+        exit 1
+        ;;
+esac
+
+exit 0
+

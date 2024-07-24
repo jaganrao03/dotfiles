@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Function to fetch "feels like" temperature for a given city ID
+get_feels_like_temperature() {
+    city_id=$1
+    api_key="a8535dde24a0b70e79d23adfa90e0519"
+    url="http://api.openweathermap.org/data/2.5/weather?id=${city_id}&appid=${api_key}&units=metric"
+    
+    response=$(curl -s "$url")
+    feels_like_temperature=$(echo "$response" | jq -r '.main.feels_like')
+    rounded_temperature=$(printf "%.0f" "$feels_like_temperature")
+    
+    echo $rounded_temperature
+}
+
+#city_id=4705708  # Liberty Hill city ID
+city_id="4693342"
+feels_like_temperature=$(get_feels_like_temperature "$city_id")
+echo "${feels_like_temperature}°C"
+

@@ -1,0 +1,21 @@
+set $wallpaper /home/jagan/.config/hypr/wallpaper/wallpaper_84.png
+
+set $background #090704
+set $foreground #e2cebe
+
+set $color0 #090704
+set $color1 #1313ae
+set $color2 #cf6117
+set $color3 #e88c35
+set $color4 #eb9c53
+set $color5 #1c80e5
+set $color6 #f0a681
+set $color7 #e2cebe
+set $color8 #9e9085
+set $color9 #1313ae
+set $color10 #cf6117
+set $color11 #e88c35
+set $color12 #eb9c53
+set $color13 #1c80e5
+set $color14 #f0a681
+set $color15 #e2cebe

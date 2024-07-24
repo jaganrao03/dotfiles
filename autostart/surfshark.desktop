@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=surfshark
+Comment=surfshark startup script
+Exec=surfshark 
+StartupNotify=false
+Terminal=false

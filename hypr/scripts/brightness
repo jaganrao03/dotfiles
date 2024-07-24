@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+
+iDIR="$HOME/.config/dunst/icons"
+
+# Get maximum brightness
+MAX_BRIGHTNESS=$(brightnessctl m)
+
+# Get brightness in percentage
+get_backlight() {
+    local current_brightness
+    current_brightness=$(brightnessctl g)
+    local percentage=$((current_brightness * 100 / MAX_BRIGHTNESS))
+    echo "${percentage}%"
+}
+
+# Get icons
+get_icon() {
+    local current_brightness
+    current_brightness=$(brightnessctl g)
+    local percentage=$((current_brightness * 100 / MAX_BRIGHTNESS))
+    if [[ "$percentage" -le 20 ]]; then
+        icon="$iDIR/brightness-20.png"
+    elif [[ "$percentage" -le 40 ]]; then
+        icon="$iDIR/brightness-40.png"
+    elif [[ "$percentage" -le 60 ]]; then
+        icon="$iDIR/brightness-60.png"
+    elif [[ "$percentage" -le 80 ]]; then
+        icon="$iDIR/brightness-80.png"
+    else
+        icon="$iDIR/brightness-100.png"
+    fi
+}
+
+# Notify
+notify_user() {
+    notify-send -h string:x-canonical-private-synchronous:sys-notify -u low -i "$icon" "Brightness : $(get_backlight)"
+}
+
+# Increase brightness
+inc_backlight() {
+    brightnessctl set 10%+ && get_icon && notify_user
+}
+
+# Decrease brightness
+dec_backlight() {
+    brightnessctl set 10%- && get_icon && notify_user
+}
+
+# Execute accordingly
+case "$1" in
+    --get)
+        get_backlight
+        ;;
+    --inc)
+        inc_backlight
+        ;;
+    --dec)
+        dec_backlight
+        ;;
+    *)
+        get_backlight
+        ;;
+esac
+

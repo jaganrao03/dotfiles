@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=localsend_app
+Comment=localsend_app startup script
+Exec=/tmp/.mount_localseLCJKc/localsend_app
+StartupNotify=false
+Terminal=false
